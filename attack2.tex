@@ -1,1 +1,69 @@
 \section{Zach's attack}
+\paragraph{Bug-Bounty Programs}
+Bug-bounty programs are utilized by companies to find vulnerabilities in their web-services.  With an ever growing need to put information out on the web; whether it be blogs, news articles, social media, cloud storage, remote work, etc you can see why a company would want their services secure. There is also research that for web-based services, it can be more beneficial to be a part of a bug-bounty program than it is to hire multiple full time security analysts.  With the theory “More sets of eyes are better than one” bug-bounty programs have taken off in recent times.  Thousands of dollars are awarded monthly, and for some researchers who really know their stuff - it can be their full time job.
+
+Looking at bug-bounty programs specifically, we find the top two submits/payouts over the last couple years have been either SQL Injection or Cross Site Scripting(XSS).  Both are important as they can each have huge impacts to both the company and user’s information and security.  XSS is quite interesting to me, as it can be a little harder to protect everywhere it can happen on a web service, and escalating from a general XSS vulnerability to a full out attack is interesting to me.
+
+
+NOTE: There are reasons for web developers have to stay on top of their game as far as security goes.  As time goes on, new attacks are created and new attack vectors are announced.  Updates get rolled out, which changes the way web developers have to protect their infrastructure. Sometimes, websites are slow to roll them out, so their web service is vulnerable to the attacks those updates were put in place to defend.
+
+Most bug-bounty programs won’t allow any submits from automated scanners.  The reason for this is there is a lot of false-positives.  However, can you imagine how many hours would be spent diving into a website, with hundreds to thousands of webpages and/or sub-domains that are associated with it?  Doing this manually can be exhausting, and can make anyone want to lose their mind and give up.  After asking a few bug-bounty aficionados on how they go about first looking into a website I found a general consensus that they all use some form of automated scanner to get a good layout of the web site and and how the backend is laid out. Nmap, Burp-Suite, Web-Scraping tools, Proxies, etc all seem to be pretty common, as well as some custom built python scraping tools.  One of those I will discuss below - Xsscrapy.  Basically no matter what tools are used, they are all for intelligence gathering.  There is still a significant amount of manual testing to be done once an area is found that might be vulnerable.
+
+\paragraph{XSS}
+As discussed above, I’m focusing on XSS attacks, both client and server side attacks.  The first thing to discuss is; What exactly is XSS?  An XSS vulnerability is when a website displays user input without escaping it.  There a number of ways to escape input fields, and it’s fairly easy to defend against now a days with a few lines of code - but there’s still a number of websites that have this vulnerability or have had it exposed in the recent past.	
+
+
+\paragraph{Tools}
+
+\subparagraph{Burp-Suite -} 
+Utilized by penetration testers, as at the very minimum it can be used to intercept all data being transferred to the browser as a web page is loaded.  This includes javascript files, DOM elements, cookies, referral headers.  The tool is useful for finding un-sanitized/validated/encoded elements being passed around.  
+Personally, I think the most useful part of this tool is to show the referral headers that are being passed to the browser as the web page is being loaded.. They are often forgotten about as a potential attack vector. 
+
+\subparagraph{XSScrapy}
+An open source XSS scanner by Dan McInerney.  It is a python scripted tool that “scrapes” a website, this tool creates spiders that recursively check every URL held in that domain to find possible injection points.  There are a number of different injection points where the injected string “1zqjam'"(){}<x>:/1zqjam;9” is placed into them. This injection string contains the most “dangerous” character that can be used to subvert basic levels of escaping.
+There is an output text file given after searching recursively through every link, that lists some of the results. An example ran against YouPorn is :
+
+\subparagraph{}
+
+URL: http://www.youporn.com/
+
+responseURL: http://www.youporn.com/search/?query=1zqjam%27%22%28%29%7B%7D%3Cx%3E%3A%2F1zqjam%3B9
+
+POST url: http://www.youporn.com/search/
+
+Unfiltered: '"(){}:/;
+
+Payload: 1zqjam'"(){}<x>:/1zqjam;9
+
+Type: form
+
+Injection point: query
+
+Possible payloads: x"/onmouseover=prompt(9)/", x" onmouseover=prompt(9) "
+
+Line: <meta name="description" content="watch 1zqjam'"(){}:/1zqjam;9
+
+\paragraph{}
+Here, the important parts are the http://www.youporn.com/search/?query=  and the
+Payload: 1zqjam'"(){}<x>:/1zqjam;9.  The string '"(){}<x>:/ is the most important part of the injected payload and as you can see by the response URL, all the characters that “pass thru” authentication are all encoded as %27%22%28… etc.  Now, after trying this query parameter a number of different ways, this turned out to be a “false-positive” - which is common with autmated tools like this.
+
+Another example with a different output against a sub-domain of YouPorn is:
+\paragraph{}
+URL: https://blog.youporn.com/stop-sopa-stop-internet-censorship/
+Found non-registered domain in script tag! Non-registered URL: http://www.gsy009.com/Scripts.js
+\paragraph{}
+This is probably the most devastating finding this tool can give you.  It recursively checks every javascript file link inside the DOM of the webpage, so in this case it automatically nmaps the domain www.gsy009.com/Scripts.js.  This domain is no longer registered, so this javascript file that's hosted on this blog portion of YouPorn links to nowhere.  That is, until one could have the desire to buy that domain (www.gsy009.com) and host a malicious javascript file (named Scripts.js) from there, and victim's browser will automatically some potentially devastating code.
+
+\subparagraph{Sublist3r}
+Interesting tool that checks sub-domains of a given domain. Uses web searching sites such as Google, Yahoo, Bing, Ask, Baidu, and some DNS scanners, and brute forcing through them to find any reference to sub domains (Ie: blog.zachpriest.com is a sub-domain of zachpriest.com).
+Sublist3r also port scans each sub-domain, showing you what ports are open what aren’t.  This is important recon work that goes into penetration testing.
+
+\subparagraph{Recent Interesting Bounties and Escalation }
+To get a good payout - or in some cases even be able to submit a bug on one of these bug-bounty platforms, a simple Reflected XSS attack won’t work.  It’s important for the security researcher to escalate the bug as far as he can.  There are a number of ways to do this, so it really takes ingenuity and a lot of manual testing to stitch together different bugs to make one big, impactful one.  This is where the big payouts are, and the following is a short list of the most interesting one’s I have read.  
+
+	
+
+
+
+
+\end{document}
