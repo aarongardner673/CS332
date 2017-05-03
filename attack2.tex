@@ -17,8 +17,6 @@ Malicious string or code block is hosted on the websites database.  The attacker
 \subparagraph{Non-Persistent XSS}
 This is also referred to as Reflected XSS or when the malicious string is input through the victim.  An example of this would be throwing www.example.com/query?= <script>malicious-stuff-here</script> and shortening the URL, social engineering someone to click on the link, and voila!
 
-\pagebreak{}
-
 \paragraph{Tools}
 
 \subparagraph{Burp-Suite -} 
@@ -67,17 +65,17 @@ Sublist3r also port scans each sub-domain, showing you what ports are open what 
 \subparagraph{Recent Interesting Bounties and Escalation }
 To get a good payout - or in some cases even be able to submit a bug on one of these bug-bounty platforms, a simple Reflected XSS attack won’t work.  It’s important for the security researcher to escalate the bug as far as he can.  There are a number of ways to do this, so it really takes ingenuity and a lot of manual testing to stitch together different bugs to make one big, impactful one.  This is where the big payouts are, and the following is a short list of the most interesting one’s I have read.  
 
-\subsubparagraph{Self XSS to Good-XSS AirBNB}
+\subparagraph{Self XSS to Good-XSS AirBNB}
 
 - http://www.geekboy.ninja/blog/airbnb-bug-bounty-turning-self-xss-into-good-xss-2/
 
-\subsubparagraph{Stored XSS on developer.uber.com via admin account compromise} 
+\subparagraph{Stored XSS on developer.uber.com via admin account compromise} 
 
 - https://hackerone.com/reports/152067
 
-\subsubparagraph{Self-XSS to Good-XSS Uber}
+\subparagraph{Self-XSS to Good-XSS Uber}
 
 - https://whitton.io/articles/uber-turning-self-xss-into-good-xss/
 
-This is just a small list of impactful bugs that paid out at least five thousand dollars to security researchers that found them.  There are a number of "hall of fame" lists out there for every vulnerability you can think of, these were interesting to me because they were in-depth and gave a good overview on how a security researcher goes about escilating a common, not such a big deal xss vulnerability into something much more.  The list I used is: https://github.com/ngalongc/bug-bounty-reference#cross-site-scripting-xss.
+This is just a small list of impactful bugs that paid out at least five thousand dollars to security researchers that found them.  There are a number of "hall of fame" lists out there for every vulnerability you can think of, these were interesting to me because they were in-depth and gave a good overview on how a security researcher goes about escilating a common, not such a big deal xss vulnerability into something much more.  The list I used is: https://github.com/ngalongc/bug-bounty-reference\#cross-site-scripting-xss.
 
