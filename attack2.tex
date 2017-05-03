@@ -10,8 +10,14 @@ NOTE: There are reasons for web developers have to stay on top of their game as 
 Most bug-bounty programs won’t allow any submits from automated scanners.  The reason for this is there is a lot of false-positives.  However, can you imagine how many hours would be spent diving into a website, with hundreds to thousands of webpages and/or sub-domains that are associated with it?  Doing this manually can be exhausting, and can make anyone want to lose their mind and give up.  After asking a few bug-bounty aficionados on how they go about first looking into a website I found a general consensus that they all use some form of automated scanner to get a good layout of the web site and and how the backend is laid out. Nmap, Burp-Suite, Web-Scraping tools, Proxies, etc all seem to be pretty common, as well as some custom built python scraping tools.  One of those I will discuss below - Xsscrapy.  Basically no matter what tools are used, they are all for intelligence gathering.  There is still a significant amount of manual testing to be done once an area is found that might be vulnerable.
 
 \paragraph{XSS}
-As discussed above, I’m focusing on XSS attacks, both client and server side attacks.  The first thing to discuss is; What exactly is XSS?  An XSS vulnerability is when a website displays user input without escaping it.  There a number of ways to escape input fields, and it’s fairly easy to defend against now a days with a few lines of code - but there’s still a number of websites that have this vulnerability or have had it exposed in the recent past.	
+As discussed above, I’m focusing on XSS attacks, both client and server side attacks.  The first thing to discuss is; What exactly is XSS?  An XSS vulnerability is when a website displays user input without escaping it.  There a number of ways to escape input fields, and it’s fairly easy to defend against now a days with a few lines of code - but there’s still a number of websites that have this vulnerability or have had it exposed in the recent past.
+There are two main types of XSS: Persistent and Non-persistent.
+\subparagraph{Persistent XSS}
+Malicious string or code block is hosted on the websites database.  The attacker was able to inject something into the database that will affect all victims.  This is probably the most expansive and impactful XSS vulnerability as it doesn't really require anyone to be social engineered into clicking on a bad link.
+\subparagraph{Non-Persistent XSS}
+This is also referred to as Reflected XSS or when the malicious string is input through the victim.  An example of this would be throwing www.example.com/query?= <script>malicious-stuff-here</script> and shortening the URL, social engineering someone to click on the link, and voila!
 
+\pagebreak{}
 
 \paragraph{Tools}
 
@@ -44,7 +50,7 @@ Possible payloads: x"/onmouseover=prompt(9)/", x" onmouseover=prompt(9) "
 Line: <meta name="description" content="watch 1zqjam'"(){}:/1zqjam;9
 
 \paragraph{}
-Here, the important parts are the http://www.youporn.com/search/?query=  and the
+Here, the important parts are the Repsonse URL: http://www.youporn.com/search/?query=  and the
 Payload: 1zqjam'"(){}<x>:/1zqjam;9.  The string '"(){}<x>:/ is the most important part of the injected payload and as you can see by the response URL, all the characters that “pass thru” authentication are all encoded as %27%22%28… etc.  Now, after trying this query parameter a number of different ways, this turned out to be a “false-positive” - which is common with autmated tools like this.
 
 Another example with a different output against a sub-domain of YouPorn is:
@@ -56,13 +62,22 @@ This is probably the most devastating finding this tool can give you.  It recurs
 
 \subparagraph{Sublist3r}
 Interesting tool that checks sub-domains of a given domain. Uses web searching sites such as Google, Yahoo, Bing, Ask, Baidu, and some DNS scanners, and brute forcing through them to find any reference to sub domains (Ie: blog.zachpriest.com is a sub-domain of zachpriest.com).
-Sublist3r also port scans each sub-domain, showing you what ports are open what aren’t.  This is important recon work that goes into penetration testing.
+Sublist3r also port scans each sub-domain, showing you what ports are open what aren’t.  This is important recon work that goes into penetration testing, as sub-domains are potential backdoors into a companies infrstructure as well.
 
 \subparagraph{Recent Interesting Bounties and Escalation }
 To get a good payout - or in some cases even be able to submit a bug on one of these bug-bounty platforms, a simple Reflected XSS attack won’t work.  It’s important for the security researcher to escalate the bug as far as he can.  There are a number of ways to do this, so it really takes ingenuity and a lot of manual testing to stitch together different bugs to make one big, impactful one.  This is where the big payouts are, and the following is a short list of the most interesting one’s I have read.  
 
-	
+\subsubparagraph{Self XSS to Good-XSS AirBNB}
 
+- http://www.geekboy.ninja/blog/airbnb-bug-bounty-turning-self-xss-into-good-xss-2/
 
+\subsubparagraph{Stored XSS on developer.uber.com via admin account compromise} 
 
+- https://hackerone.com/reports/152067
+
+\subsubparagraph{Self-XSS to Good-XSS Uber}
+
+- https://whitton.io/articles/uber-turning-self-xss-into-good-xss/
+
+This is just a small list of impactful bugs that paid out at least five thousand dollars to security researchers that found them.  There are a number of "hall of fame" lists out there for every vulnerability you can think of, these were interesting to me because they were in-depth and gave a good overview on how a security researcher goes about escilating a common, not such a big deal xss vulnerability into something much more.  The list I used is: https://github.com/ngalongc/bug-bounty-reference#cross-site-scripting-xss.
 
