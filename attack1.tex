@@ -12,17 +12,17 @@ txtUserId = getRequestString("UserId");
 txtSQL = "SELECT * FROM Users WHERE UserId = " + txtUserId;
 \end{lstlisting}
 
-The rest of this section will explain how a malicous user can exploit this implementation.
-
-\subsection{SQL Injection based on 1=1 is always true}
-
 A normal user would simply type something like "John Doe" as their username and "myPass" as their password. The SQL query formed by concatenating user input with a pre-written string literal might look like this: 
 
 \begin{lstlisting}[language = SQL]
 SELECT * FROM Users WHERE Name = "John Doe" and Pass ="myPass"
 \end{lstlisting} 
 
-In this very simple implementation, there is nothing stopping a user from entering input that can be misinterpreted by the SQL interpreter. For instance, if the user entered:
+The rest of this section will explain how a malicous user can exploit this implementation.
+
+\subsection{SQL Injection based on 1=1 is always true}
+
+In this very simple implementation from above, there is nothing stopping a user from entering input that can be misinterpreted by the SQL interpreter. For instance, if the user entered:
 \begin{verbatim}
 105 OR 1=1
 \end{verbatim}
