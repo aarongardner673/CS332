@@ -1,4 +1,4 @@
-\section{"Rubber Ducky" attack}
+\section{"Rubber Ducky" mallicious USB devices attack}
 A "Rubber Ducky" attack is neither a client or server side attack and instead is a physical attack that preys on either a person's curiosity or a person's lack of knowledge. The basis for the attack is either an infected USB thumbdrive or a specifically created USB drive. 
 
 \subsection{Designed devices}
@@ -40,16 +40,45 @@ STRING del %TEMP%\mimikatz.exe
 DELAY 300
 ENTER
 \end{verbatim}
-This attack is from the payload wiki that is created for the hakshop device. It uses mimikatz and the elevated privages of a user to dump their passwords from digest. \\
+This attack is from the payload wiki that is created for the hakshop device. It uses mimikatz and the elevated privages of a user to dump their passwords from digest. The nice thing about these devices is that writing custom scripts for it is easy and it just requires the user to know what keystrokes they want to simulate\\
 \\
 
-subsection{Infected USB Devices}
+subsection{HID creation/SET}
+The social engineering toolkit can use Arduino like devices to create a device that is similar to the hakshope rubber ducky. 
+\begin{verbatim}
+
+This attack vector also attacks X10 based controllers, be sure to be leveraging
+ X10 based communication devices in order for this to work.
+
+ Select a payload to create the pde file to import into Arduino:
+
+   1) Powershell HTTP GET MSF Payload
+   2) WSCRIPT HTTP GET MSF Payload
+   3) Powershell based Reverse Shell Payload
+   4) Internet Explorer/FireFox Beef Jack Payload
+   5) Go to malicious java site and accept applet Payload
+   6) Gnome wget Download Payload
+   7) Binary 2 Teensy Attack (Deploy MSF payloads)
+   8) SDCard 2 Teensy Attack (Deploy Any EXE)
+   9) SDCard 2 Teensy Attack (Deploy on OSX)
+  10) X10 Arduino Sniffer PDE and Libraries
+  11) X10 Arduino Jammer PDE and Libraries
+  12) Powershell Direct ShellCode Teensy Attack
+  13) Peensy Multi Attack Dip Switch + SDCard Attack
+  14) HID Msbuild compile to memory Shellcode Attack
+
+  99) Return to Main Menu
+
+\end{verbatim}
+
+These are the attcks that the Social Engineering Toolkit have prebuilt for deployment on a teensy or arduino like microcontroller. The attacks for this are more sofisticated if the attacker wants to modify it because they are written in c or c++. Attack 13 wouldn't be a type of attack where the device was used by an unsuspecting user. It creates a tool that uses dip switches to change what attack is being run and could be used by a malicious person changing the dip switches while trying to exploit an empty workstation. 
+
+subsection{BadUSB Devices}
 "BadUSB" is research on different USB devices that can be converted to execute these style of attacks named. These attacks require the creator to reprogram the firmware of a device. This attack is not limited to USB thumbdrive type devices.There is a list of devices that have been researched at https://opensource.srlabs.de/projects/badusb.  
 
-subsection{HID creation}
-The social engineering toolkit also 
 \subsection{Impact}
-This attack requires that the attacker have more knowledge on the physical operations of a target. On a successful attack this increases the payoff. An example of this being sucessful is the Stuxnet attack on Iran. The attack was able to cross into an air gaped, not accessable from the internet, system and destroy centerfuges because the payload was designed to target the industrial control systems that the centerfuges used. This is an extreme example but these styles of attacks have been used by nation's to protect their self interest.
+This attack requires that the attacker have more knowledge on the physical operations of a target. On a successful attack this increases the payoff. An example of this being sucessful is the Stuxnet attack on Iran. The attack was able to cross into an air gaped, not accessable from the internet, system and destroy centerfuges because the payload was designed to target the industrial control systems that the centerfuges used. This is an extreme example but these styles of attacks have been used by nation's to protect their self interest.\\
+
 
 \subsection{Prevention}
 Preventing the lower level versions of these attacks are simple. Don't let regular users have local admin. Blacklist USB devices and don't allow automatic installation.\\
