@@ -1,7 +1,7 @@
 \section{SQL Injection}
 
 \subsection{Overview}
-Injetion is classified by the Open Web Application Security Project as the top threat vector to web applications. An injection attack is defined by a malicious entity sends untrusted data to an interpreter as part of a command or query. This untrusted data can trick an interpreter into executing commands sent by the external malicious user, or accessing data without authorization. SQL Injection attacks are application specific, targeted at applications running an SQL (Structured Query Language) database. On very simple implementations, data that users provide is entered into a SQL database using pre-written SQL queries as string literals, with the user supplied information being concatenated into the body of the query. This is very easy to exploit, as attackers simply send text that exploits SQL syntax.
+Injection is classified by the Open Web Application Security Project as the top threat vector to web applications. An injection attack is defined by a malicious entity sends untrusted data to an interpreter as part of a command or query. This untrusted data can trick an interpreter into executing commands sent by the external malicious user, or accessing data without authorization. SQL Injection attacks are application specific, targeted at applications running an SQL (Structured Query Language) database. On very simple implementations, data that users provide is entered into a SQL database using pre-written SQL queries as string literals, with the user supplied information being concatenated into the body of the query. This is very easy to exploit, as attackers simply send text that exploits SQL syntax.
 
 \subsection{SQL in Web Pages}
 
@@ -12,13 +12,13 @@ txtUserId = getRequestString("UserId");
 txtSQL = "SELECT * FROM Users WHERE UserId = " + txtUserId;
 \end{lstlisting}
 
-A normal user would simply type something like "John Doe" as their username and "myPass" as their password. The SQL query formed by concatenating user input with a pre-written string literal might look like this: 
+A normal user would simply type something like "John Doe" as their username and "myPass" as their password. The SQL query formed by concatenating user input with a pre-written string literal might look like this:
 
 \begin{lstlisting}[language = SQL]
 SELECT * FROM Users WHERE Name = "John Doe" and Pass ="myPass"
-\end{lstlisting} 
+\end{lstlisting}
 
-The rest of this section will explain how a malicous user can exploit this implementation.
+The rest of this section will explain how a malicious user can exploit this implementation.
 
 \subsection{SQL Injection based on 1=1 is always true}
 
@@ -32,7 +32,7 @@ SELECT * FROM Users WHERE UserId = 105 OR 1=1;
 \end{lstlisting}
 This SQL is valid, and since the boolean logic of anything with OR 1=1 will make the statement always true, it will return every row of the Users table. With a simple text input, every row in this table is now exposed. If the Users table contains passwords and emails, this sensitive data is now exposed.
 
-'OR 1=1' is just one such entry that can fool the SQL interpreter, but is certainly not the only one. For instance, entering 
+'OR 1=1' is just one such entry that can fool the SQL interpreter, but is certainly not the only one. For instance, entering
 \begin{verbatim}
 " or ""="
 \end{verbatim}
@@ -45,7 +45,7 @@ SELECT * FROM Users WHERE Name ="" or ""="" AND Pass ="" or ""=""
 
 Most databases support batched SQL statments as a form of executing several queries or statments at once. Batched statements are statements on the same line, seperated by a semicolon. For example, on a database that supports batched statements, the following would be legal:
 \begin{lstlisting}[language = SQL]
-INSERT INTO Users (username, password, email) 
+INSERT INTO Users (username, password, email)
 VALUES ("admin", "pass", "me@yes.com"); SELECT * FROM Users;
 \end{lstlisting}
 A website that does not validate input and uses string concatenation would allow the following input to exploit batched statements:
@@ -54,7 +54,7 @@ A website that does not validate input and uses string concatenation would allow
 \end{verbatim}
 Which would turn the original SQL query to find users into this batched statement:
 \begin{lstlisting}[language = SQL]
-SELECT * FROM Users WHERE UserId = 73128; DROP TABLE PaymentInfo; 
+SELECT * FROM Users WHERE UserId = 73128; DROP TABLE PaymentInfo;
 \end{lstlisting}
 From one line of text input, a malicous user has been given the capability to drop an entire table of data! For a Fortune 500 company, this could be catastrophic. In the hands of a especially creative attacker, they could even do more devious things, such as copying the billing information from one client to several others. Changes like this are sure to damage client relations.
 
@@ -63,12 +63,12 @@ From one line of text input, a malicous user has been given the capability to dr
 All modern Web languages have a best-practice way of handling user input to prevent SQL injection, but surprisingly this attack vector remains at the top of OWASP's top 10 list. I believe this is because of the many fallacies that surround protection from SQL attacks, including data sanitization. PHP had a feature called magic-quotes, which was designed as a fix-all for escaping SQL commands embedded in user-input, but it had exploitable weaknesses that lead to its deprecation.
 
 The proper implementation has one rule: whenever embedding a string within foreign code it must be escaped according to the rules of that language. This means that SQL code that will run on a MySQL database must be escaped using the MySQL syntax rules. SQL code that will run on MSSQL will be escaped using MSSQL rules, and so on.
- 
-Another method is to use prepared statements and SQL parameters. A prepared statment is pre-written, and accepts values as inputs. These inputs are always escaped by the SQL interpreter. 
+
+Another method is to use prepared statements and SQL parameters. A prepared statment is pre-written, and accepts values as inputs. These inputs are always escaped by the SQL interpreter.
 
 Here is what a prepared statment would look like in PHP:
 \begin{lstlisting}[language = PHP]
-$sql = 
+$sql =
 "INSERT INTO Users (Username,Address) VALUES (:name, :address)"
 $preparedStatement = $databaseHandle->prepare($sql);
 $preparedStatement->bindParam(':name', $name);
