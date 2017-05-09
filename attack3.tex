@@ -1,1 +1,312 @@
-\section{Matt's attack}
+\section{Matt's Attack: Password Cracking}
+
+\subsection{Introduction}
+Password attacks are a highly valuable resource in the ethical hacker’s toolkit. When it comes to penetration testing, it might be tempting to focus exclusively on possible exploits found on the client or server side to gain control of a system. However, exploits are only part of the equation: password attacks can provide an easy way to gain access to other systems in an organization, to escalate privileges, and to maintain a foothold long after an initial attack.
+
+Passwords are an essential part of the modern security infrastructure, as they provide the primary means of authenticating a user to a system, and the first line of defense against intruders. However, passwords are arguably one of the weakest means by which systems verify identities. This is because the user (i.e., weakest link in a security chain) gets to decide how strong of a password to use, and then is solely responsible for maintaining its secrecy.
+
+Weak passwords are one of the primary security vulnerabilities of internal networks. Yet it is common to find that a user ID and password is the only form of authentication required to access mission critical systems, shared directories on servers, virtual private networks (VPNs), web applications, email, and more.
+
+For these reasons, it is crucial to understand how password security works, where vulnerabilities get introduced, and what strategies and tools exist in this attack vector.
+
+\subsubsection{Authentication Background}
+Companies have always depended on some mechanism to keep their valuable data secure from unauthorized entities -- i.e., confidentiality and integrity -- yet available to legitimate users. Before networked computers, it was enough to rely on physical controls like locks, doors and filing cabinets. However, authentication in today’s world is much trickier to get right, especially since most companies are accessible from virtually anywhere an Internet connection will allow.
+
+In digital authentication, the idea is for an individual to prove his or her identity with a credential. This would be like unlocking a door by inserting the correct key. Then, the authenticated user identity will be authorized to access certain resources based on rights granted. This would be like turning the key to open the door. In other words, authentication is about who you are, and authorization is about what you can do.
+
+Overall, a good authentication system should make it as hard as possible for one user to fake the identity of another another by forging credentials. There are 3 basic ways to authenticate:
+\begin{enumerate}
+  \item \textit{Something you know} (memorized information like passwords or PINs)
+  \item \textit{Something you have} (an object like a token or ATM card)
+  \item \textit{Something you are} (a biometric scan of fingerprints or retina)
+\end{enumerate}
+Two-factor authentication requires two different authentication factors (e.g., an ATM machine needs card and pin). Most organizations use only passwords for authentication, which means using only one the three factors. And passwords have always been vulnerable to a plethora of attacks.
+
+\subsubsection{Hashing Background}
+In most cases, passwords would not be stored in plain text format. Instead, operating systems obfuscate the original plaintext by using a form of irreversible (one-way) encryption in what is known as a hash function. Given a variable-length plaintext password input, a hash function will output a fixed-length value that uniquely maps to the given input. The utility and security of hash functions follows from the fact that it is very fast to convert an input to an output, but very hard to go in the reverse direction. Some common examples are \verb|MD5| and \verb|SHA|.
+
+A good hash function should produce outputs that can resist attackers who apply trial-and-error guessing, or who try to analyze patterns in its behavior. In practice, a one-way hash function should have these qualities:
+\begin{itemize}
+  \item Any changes to the input -- whether a single bit, a few bytes, or a large amount --  should produce large and unpredictable results for the hash value.
+  \item Making the input longer or shorter should output large and unpredictable hash values.
+  \item Given a hash value, there is no way to reconstruct the input that produced that hash value.
+  \item Given an input and its hash value, there is no way to construct a new input that produces the same hash value.
+\end{itemize}
+Although mathematically it is impossible for a hash function to generate a unique hash value for every possible input, hash functions work in practice because there are vastly more possible hash values than there are inputs.
+
+\subsubsection{Password Security Background}
+In many organizations, passwords are the only form of security guarding servers and internal information. As it’s often trivial to construct valid user IDs for individuals at a company (such identifiers are usually a variation of an employee's first and last names), all an attacker needs to break into a system is a user’s password. Therefore, passwords should be hidden from disclosure and difficult to guess.
+
+An organization can do a few things to bolster password security. To reduce vulnerabilities to password guessing attacks at login forms, systems can:
+\begin{itemize}
+  \item Insert time delays into the login process
+  \item Keep track of failed login attempts
+  \item Enforce a maximum number of guesses before locking
+\end{itemize}
+Companies can make passwords harder to crack (resistant to trial-and-error guessing) by increasing the search space. The search space is the number of unique passwords that could possibly be produced from a given sized password. A greater search space is achieved by increasing the password length and/or the size of the character set available.
+
+\noindent
+Overall, a hashed password is resistant to cracking to the degree that it has these features:
+\begin{itemize}
+  \item \textbf{Hash algorithm is strong.}
+  At a minimum, you must use a well-written hash function backed by a cryptographically proven algorithm for the hashed value to have any chance of staying protected.
+
+  \item \textbf{Hash key is large.}
+  If you have a larger hashing key, then there will be more possible keys to uniquely identify the input of the hash function and a reduced chance of collisions.
+
+  \item \textbf{Passwords are long.}
+  Requiring a minimum password length will help to increase the search space necessary in a brute force attack. Since most users will not want to use other characters besides the typical set of alphanumeric values, a longer password can be an alternative.
+
+  \item \textbf{Character set is large.}
+  A password will be stronger if it allows for a greater range of characters per position in the password. This increases the search space attackers must deal with.
+
+  \item \textbf{Requires many CPU cycles to compute.}
+  If you choose a hashing function that necessitates running more CPU cycles per password hash, you will make it that much more time consuming for an attacker, who will also have to process the same number of CPU cycles per password attempt.
+
+  \item \textbf{Uses password salts.}
+  A salt is a random string value that is added to a password before encryption to make it harder to crack. Because the salt is randomized each time, if two users had the same passwords the salts would be different, thus causing different hashed outputs. This provides a layer of defense because if an attacker cracked one password’s hash, he or she would not be able to find any relationship to other passwords with the same hash. The attacker would need to crack each password separately. Linux type OSs salt passwords during encryption; Microsoft OSs do not, which partly explains why Microsoft passwords are typically easier to crack.
+
+\end{itemize}
+Although organizations can require more complex passwords and the best hashing operations, there is always the uncontrollable element of the average user’s behavior. A more difficult password increases the risk that a user will expose his or her password after writing it down or saving it somewhere accessible to others. Further, the average user typically reuses the same password on many sites.
+
+\subsection{Password Cracking: An Overview}
+Passwords provide the weakest form of security because someone can guess them through password cracking. If an attacker manages to locate a list of hashes from a target (for example, by running a SQL injection to extract password hash data from a table), then the likelihood of deriving the actual passwords increases dramatically. The attacker can apply various offline cracking tools, and do this all locally, without being bothered by a target system's invalid password attempt security policies. And even if all that can be deciphered is an average user password, the attacker can impersonate the user at login, providing better position from which to escalate to the root account if any local vulnerabilities can be found.
+
+\noindent
+Since password hashes are what attackers have to work with, cracking happens by:
+\begin{enumerate}
+  \item Guessing the password
+  \item Hashing the candidate password to get a hash output
+  \item Checking whether the candidate password hash matches the hash on record
+\end{enumerate}
+
+\noindent
+This would be tedious and slow to do manually, therefore programs are used to rapidly generate guesses and compare each against the hashed value until a match is found. This procedure is typically run offline on a recovered password file.
+
+In contrast to guessing passwords online, offline cracking has several advantages. First, it leaves a minimal footprint in system logs and network captures. It also bypasses any interaction with the target system’s login security annoyances, such as causing accounts to be locked on failed password attempts. Finally, offline cracking attacks can fly through millions of guess/encrypt/compare actions per second.
+\newpage
+
+\noindent
+Overall, the attacker will follow this cracking procedure:
+
+\begin{enumerate}
+  \item Acquire the username(s)
+  \item Acquire the hashed password(s)
+  \item Determine which hashing algorithm was employed
+  \item Generate a wordlist of possible passwords
+  \item Run a cracking program to generate hashed outputs based on wordlist inputs
+  \item For each output, check whether it matches the actual password hash value
+\end{enumerate}
+
+\subsubsection{Types of cracking attacks}
+A password cracking strategy will make use of one or more of the following methods.
+
+\paragraph{Dictionary}
+This is the fastest type of attack: you would utilize a text file containing a list of words, which would be fed into a cracking program, allowing the program to try comparing the hash of every dictionary word against each of the hashed passwords. You can create your own, and there are numerous downloadable examples online. A dictionary attack would be a good choice if, for example, you want to quickly test an organization to see if its users have any ``low hanging fruit'' passwords that show up in typical dictionary lists.
+
+\paragraph{Hybrid}
+The hybrid attack is an extension of the dictionary attack: the idea is to use words form a dictionary, but also check the characters using numbers and symbols. For example, if the password was \verb|br3akMe!|, this would be cracked if the dictionary simply contained \verb|breakMe|. Tools with this method will typically allow the user to configure detailed settings such as the use of permutations and combinations on dictionary words.
+
+\paragraph{Brute Force}
+The brute force method is the slowest possible, yet the most powerful, as it will essentially attempt to find a match between every possible permutation of a given length for each hashed password. This will always discover the password, but it could take years in some cases.
+
+\paragraph{Rainbow Table}
+A rainbow table is a file with a table of hashes that have been pre-computed from a set of words. The idea is to frontload a lot of the CPU computing time by caching the outputs from the computation of hashes for all the words in a dictionary. It trades space for time, requiring only a quick lookup into the indexed table, rather than calculating each hash from scratch. As an example, an attacker might want to have a pre-computed table of every possible hash output from the \verb|MD5 algorithm|, where inputs are restricted to being lowercase letters and numbers no longer than 8 characters. This would result in a file of over 80 GB.
+
+Some rainbow tables are published online: \url{http://project-rainbowcrack.com/table.htm}. Kali Linux also provides a tool called \verb|Rcrack| for parsing rainbow tables to locate matching hash value mappings.
+
+\subsubsection{Ways of acquiring password hashes}
+  A list of hash values is maintained by every OS, and typically such information is accessible only to the root level administrator. On Windows, you can find the hashes stored in an encrypted \path{C:\Windows\SAM} file, but the key is available in the \verb|SYSTEM| file. For a Windows machine, there are several ways that you could acquire the system’s list of hashes. For example, if you gain system privileges on Windows XP and have a Meterpreter session, you can simply use Meterpreter’s hash dump utility to print the hashes. Or, you could dump the hashes with Mimikatz on a compromised system. You could also run \verb|samdump2| to get the hashes from the \verb|SAM| file. Alternatively, if you have physical access to a machine running Windows, you could get the hashes by restarting and booting with a Linux Live CD to get past Windows' security controls and access the \verb|SAM| and \verb|SYSTEM| files.
+
+  On modern Linux systems, the hashes are found in the \path{/etc/shadow} file, which greatly limits access. On older Linux distributions, the hashes were located in the \path{/etc/passwd} file, which had full read access to users. As an attacker, you would need to first establish yourself as the root admin, perhaps via a backdoor exploit.
+
+  Another potential source of hashes is a successful SQL injection attack, where the attacker could dump a database with user and password credential information.
+
+  Finally, one can find numerous hash dumps online, many of which were leaked after a security breach. For example: \url{http://www.adeptus-mechanicus.com/codex/hashpass/hashpass.php}.
+
+\subsubsection{Offline cracking tools}
+
+This section will briefly cover some of the popular tools attackers and testers can use for offline-based attacks.
+
+\begin{itemize}
+  \item \textbf{Hashcat}
+  \smallskip
+
+  \verb|Hashcat| is an open source CPU-based password cracker that uses multithreading. It is optimized to for speed and can handle over 200 hashing algorithms (\url{https://hashcat.net/hashcat/#features-algos}). Another variety, called \verb|oclHashcat|, uses the power of a system's GPU to increase the execution speed.
+
+  \verb|Hashcat| supports at least 6 attack modes, and infinitely more through its rule set options:
+
+  \begin{itemize}
+    \item \textbf{Dictionary attack (mode 0)}
+    Also called \verb|“straight” mode|, this is the default mode. Given a wordlist, it will parse each line and attempt to match the hash output.
+
+    \item \textbf{Combinator attck (mode 1)}
+    This is a simple combination, where words from multiple wordlists are concatenated in all possible combinations, then tested. For example, if we have these words: \verb|password|, \verb|04|. Hashcat will create these combinations: \verb|passwordpassword|, \verb|password04|, \verb|04password|, \verb|040|”.
+
+    \item \textbf{Mask attack (mode 3)}
+    This mode is a modified version of brute force; it gives the user more fine grained control over ranges of values. It attempts all characters from a user-specified set on each character position. It can have enormous performance gains over brute force alone, since it allows one to customize the rules to match likely patterns.
+
+    \item \textbf{Hybrid attack (mode 6 or 7)}
+    This is an extension of the combinator attack; in mode 6 it will combine using a wordlist from to the left of each mask; or in mode 7 it will do the same except use the wordlist on the right. Basically the full brute force keyspace is either appended or prepended to each of the words from the dictionary.
+
+    \item \textbf{Rule-based attack (modes 0, 6, 7)}
+    This method applies rules to words from wordlists, and combines with wordlist-based attacks. This method of attack is like a programming language designed for password candidate generation. Like a programming language, It has functions to manipulate words, and has conditional operators to skip words, for example. This provides enormous flexibility and customization for the attacker.
+
+  \end{itemize}
+  In addition to the standard CPU-based \verb|Hashcat| utility, other varieties of Hashcat use the performance of a system’s GPU to crack passwords faster. These are \verb|oclhashcat-lite| and \verb|oclhashcat-plus|. However these GPU-based crackers will not work in a VM, as direct access to the physical hardware is required.
+
+  \item \textbf{John the Ripper}
+  Similar to \verb|Hashcat|, \verb|John the Ripper| (\url{http://www.openwall.com/john/}) can crack a variety of hash values with brute force, dictionary, or modified dictionary attacks. It’s main objective is to identify weak \verb|UNIX| type passwords. It supports \verb|crypt(3)| password hash types found on \verb|UNIX| systems, as well as \verb|Windows LM| hashes.
+
+  \item \textbf{RainbowCrack}
+  As the name suggests, \verb|RainbowCrack| (\url{http://project-rainbowcrack.com/index.htm}) makes use of rainbow tables. It should be noted that the standard version in Kali Linux called \verb|rcrack| is not multithreaded. There is a modified version called \verb|rcrack-mt| that uses multithreading and acceleration using CUDA-enabled graphic cards: (\url{http://tools.kali.org/password-attacks/rcracki-mt}).
+
+  \item \textbf{Ophcrack}
+  Similar to \verb|RainbowCrack|, \verb|Ophcrack| cracks passwords using the time-memory tradeoff technique of rainbow tables. It works with the \verb|Windows LM| and \verb|NTLM| password hashes.
+
+  \item \textbf{Mimikatz}
+  \verb|Mimikatz| is a post-exploitation tool designed to extract system credentials and maintain access after a system has been compromised. It is part of the \verb|Metasploit Framework|.
+
+\end{itemize}
+
+\subsubsection{Improving Cracking Speed}
+
+  Since time is of the essence with cracking passwords, there are some additional strategies you might employ in order to get the maximum performance available. First, some attackers have utilized bot-nets to run massively distributed system to speed up the running time of cracking sessions. Perhaps instead of using bot-nets directly, you could at least utilize several legally procured machines to compute together, following the same idea although at a smaller scale. Each computer in your cracking system could be responsible for running over a different section of your dictionary, which would create a highly parallel computation.
+
+  Perhaps the most efficient and economical way of implementing a distributed cracking system is to use virtual servers, such as those rented by \verb|Amazon Web Services|. \verb|AWS| allows one to rent \verb|EC2| instances at varying speeds costing pennies per hour. \verb|AWS| also offers instances with higher powered GPUs. Cloud-based systems are what’s at the cutting edge for high performance password cracking. There are even cloud-based password-cracking services on the rise.
+
+\subsection{Password Cracking: Attack Demonstration}
+
+  This section provides a walkthrough demonstration of performing a simple password hash crack on Kali Linux. The overall plan is to create a new Linux user, give him a fairly simple password, and then set up Hashcat to crack the user’s password hash by testing with all combinations of words taken from a short wordlist. There is also commentary on alternative strategies or sources one could have used.
+
+  \subsubsection{Hashcat’s basic command syntax}
+  Hashcat provides good documentation (\url{https://hashcat.net/wiki/}) and is fairly straightforward to work with. Once you have an instance of Kali Linux running, open a terminal and check out Hashcat’s help information:
+  \begin{verbatim} $ hashcat --help \end{verbatim}
+
+  \noindent
+  As you’ll notice at the top, the basic command usage is:
+  \begin{verbatim} Usage: hashcat [options]... hash|hashfile|hccapfile [dictionary|mask|directory]... \end{verbatim}
+
+  \noindent
+  Next you’ll find a list of options. For this and pretty much all cases, you’ll want to use these options:
+  \begin{verbatim}
+    -m (the Hash-type)
+    -a (the Attack-mode)
+  \end{verbatim}
+  \noindent
+  Finally, below the options you’ll notice the list of hash modes. Hashcat is able to work with any of these algorithms. Each has a number associated with it. To run Hashcat, you’ll need to specify which type your hash value is using the \verb|-m option| with the corresponding number.
+
+\subsubsection{Create a new Linux user and assign a password}
+  Next, we want to make a new user and assign a password for this demonstration.
+  \newline
+
+  \noindent
+  In a Terminal window, execute this command:
+  \begin{verbatim} $ adduser _______ \end{verbatim}
+
+  (where ``\verb|_______|'' is a name of your choosing)
+  \bigskip
+
+  \noindent
+  When prompted to ``\verb|Enter new UNIX password|,'' use this simple example:
+  \begin{verbatim} password1234 \end{verbatim}
+  \noindent
+  Then retype it when prompted.
+  \newline
+
+  \noindent
+  Since you have root authority to see the system’s list of hash values, view the hashed version of this password in Linux’s \path{/etc/shadow} file:
+  \begin{verbatim} $ tail /etc/shadow \end{verbatim}
+
+  \noindent
+  Notice the \verb|SALT| value that Linux applied to generate this user's hash value. The \verb|SALT| is the string of characters found after the first \verb|$6$| and before the next \verb|$|. The \verb|$6$| value indicates a type 6 password hash (\verb|SHA-512|, using several thousand rounds).
+
+  \subsubsection{Determine the hashing algorithm}
+  Some details about the type of hash algorithm used by Kali Linux are recorded in \path{/etc/login.defs}. We want to zoom in on the 18 lines after the line containing showing \verb|ENCRYPT_METHOD|, so we will use this grep command:
+
+  \begin{verbatim} $ grep -A 18 ENCRYPT_METHOD /etc/login.defs \end{verbatim}
+
+  \noindent
+  You should see that the encryption method is \verb|SHA512|. Hashcat’s reference page provides some additional details (\url{https://hashcat.net/wiki/doku.php?id=example_hashes}):
+
+  \begin{verbatim}
+  Hash mode: 1800
+  Hash name: sha512crypt $6$, SHA512 (Unix)
+  Example:   $6$52450745$k5ka2p8bFuSmoVT1tzOyyuaREkkKBcCNqoD
+             KzYiJL9RaE8yMnPgh2XzzF0NDrUhgrcLwg78xs1w5pJiypEdFX/
+  \end{verbatim}
+
+  Under different circumstances, if you had come to possess one or more hash values but did not know what type of algorithm produced them, Kali has a tool called \verb|Hash IO| for \verb|Hash Identifier|, which is useful for narrowing down which algorithm likely produced a hash value. To use it, simply enter \verb|hash-identifier|, then paste a hash value to be inspected and hit enter. You should then see the program’s list of hash algorithms types like \verb|SHA-512, DES, MD5|, with the most likely candidates toward the top.
+
+\subsubsection{Extract the hash value into a file}
+  Now we want to store a copy of the new user’s hashed password value. Store it in a new file named \verb|TO_CRACK.hash|, or something similar:
+  \begin{verbatim} $ tail -n 1 /etc/shadow > TO_CRACK.hash \end{verbatim}
+
+  \noindent
+  Next, we need to process the value received by stripping off the extraneous data not intrinsic to the hash value. Open \verb|TO_CRACK.hash| in a text editor to view the string that was just added.
+  \begin{verbatim} $ vim TO_CRACK.hash \end{verbatim}
+
+  \noindent
+  At the start of the string, delete the username and the colon immediately following it. Then, starting from the end of the string and going left, trim off all the text, including all the colons, up to and including the furthest colon to the left you can find, leaving only the hash as a result.
+
+\subsubsection{Create a wordlist}
+  Building a wordlist is a highly valuable skill for successful password cracking. In a more ambitious project, you would typically spend a lot of time at this step, using the intelligence you had gained about an organization during target reconnaissance and enumeration in order to create a customized list of words that are specific to that organization. You might add words to your list having to do with anything connected to a set of individuals, such as family details, names of spouses and children, pets, and hobbies.
+
+  But to keep it simple for now, let us use a very small wordlist of only 500 items. In the same directory as all the other files in this attack, run this command to save the wordlist to a new file:
+  \begin{verbatim} $ curl http://www.scovetta.com/download/500_passwords.txt > 500_passwords.txt \end{verbatim}
+
+  \noindent
+  Examine the first 10 words in the list.
+  \begin{verbatim} $ head 500_passwords.txt \end{verbatim}
+
+  \paragraph{Finding lists online}
+  There are numerous free-to-download word lists and dictionaries that others have already spent time preparing. These could be used as is, or combined with others in interesting ways. Here are some examples:
+  \begin{verbatim}
+    http://www.skullsecurity.org/wiki/index.php/Passwords
+    http://cyberwarzone.com/cyberwarfare/password-cracking-mega-
+    collection-password-cracking-word-lists
+    http://hashcrack.blogspot.de/p/wordlist-downloads_29.html
+    http://packetstormsecurity.com/Crackers/wordlists/
+    http://blog.g0tmi1k.com/2011/06/dictionaries-wordlists.html
+  \end{verbatim}
+
+  \paragraph{Building custom lists}
+  The most effective way to generate word lists is to make your own using the precise language and vocabulary associated with your target. You might consider crawling the target’s website and related information sources online to gather a list of words. You could also customize the words you find to match the password policy of your target system, if any is known. When creating lists, one idea is to organize your collections into a two classes: large sized lists designed for cracking difficult cases, and smaller focused lists designed for guessing passwords.
+
+  Kali provides tools to support the creation of custom wordlists, making this process a lot faster. You could use \verb|CeWL|, a custom wordlist generator that will scan a website and send you all the words found that match your criteria. Another interesting tool found in Kali is called \verb|Crunch|. This is able to generate a list of all possible combinations from a set of characters.
+
+\subsubsection{Run Hashcat and crack the hash using combinator mode}
+  At this point we are ready to feed all the inputs necessary to run Hashcat. We have the hash value, we know which hash algorithm it uses (\verb|SHA-512|), and we have a wordlist. For this cracking attempt, we will use the combinator attack (\url{https://hashcat.net/wiki/doku.php?id=combinator_attack}). The basic idea is that you have two dictionaries or wordlists, and for each word in the first list, Hashcat appends each word in the second list to it. In this demo, that strategy should work knowing that the user’s password is made of two simple parts: \verb|“password” + “1234”|. We will use the same 500-length wordlist as the source for both wordlists used by Hashcat’s combinator.
+  \newline
+
+  \noindent
+  The basic form of the combinator command is as such:
+  \begin{verbatim} $ hashcat -m 0 -a 1 hash.txt dict1.txt dict2.txt \end{verbatim}
+  \noindent
+  Where \verb|-m 0| indicates the hash type, and \verb|-a 1| indicates the combinator attack type.
+  \newline
+
+  \noindent
+  From the same directory where all the relevant text files are located, run this command:
+  \begin{verbatim} $ hashcat -m 1800 -a 1 -o SUCCESS.txt --remove TO_CRACK.hash
+    500_passwords.txt 500_passwords.txt --force \end{verbatim}
+
+  \noindent
+  To break this down, here is what each part of the command is accomplishing:
+  \begin{verbatim}
+  -m 1800 .............. hash mode is UNIX’s SHA-512
+  -a 1 ................. attack type is combinator
+  -o SUCCESS.txt ....... output goes into this file
+  --remove ............. when a hash is found, remove it
+  TO_CRACK.hash ........ source of hash values
+  500_passwords.txt .... source two required dictionaries
+  --force .............. necessary for local machine
+  \end{verbatim}
+
+  \noindent
+  If the crack was successful, you will be able to see that \verb|SUCCESS.txt| was created, and viewing it shows the plaintext user password.
+
+\subsection{Impact Analysis}
+For better or worse, passwords typically stand as the main line of defense between their systems and data, and adversaries trying to gain access. With a password, an attacker could cause serious damage to resources connected to company intranets, as well as to the Internet-accessible systems like web applications, VPNs, company e-mail, etc. Even if it’s initially just to gain access via a standard user account with limited privileges, password cracking could open the door to more threatening possibilities such as escalating privileges to a system administrator level. At the end of the day, password breaches make the news, and if it were announced publicly that an organization had a major security breach involving cracked passwords, not to mention what other damage could be done when an attacker leveraged password access, etc, this would smear the company image, and could lead to significant financial losses depending on the confidence of investors and public perception.
+
+Another serious consequence of password theft is that, because individuals will frequently use the same passwords for all their accounts, acquiring a user’s password from one context often means that the same password can be used to breach the user’s other accounts as well.

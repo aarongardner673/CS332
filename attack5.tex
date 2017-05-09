@@ -1,5 +1,5 @@
-\section{"Rubber Ducky" mallicious USB devices attack}
-A "Rubber Ducky" attack is neither a client or server side attack and instead is a physical attack that preys on either a person's curiosity or a person's lack of knowledge. The basis for the attack is either an infected USB thumbdrive or a specifically created USB drive. 
+\section{Chuck's Attack: "Rubber Ducky" mallicious USB devices attack}
+A "Rubber Ducky" attack is neither a client or server side attack and instead is a physical attack that preys on either a person's curiosity or a person's lack of knowledge. The basis for the attack is either an infected USB thumbdrive or a specifically created USB drive.
 
 \subsection{Designed devices}
 There are commercially created devices that are used to execute this type of attack. A common one is the Hakshop USB Rubber Ducky. It is created to make writing the attack as simple as possible so the barrier of entry is lowered. They also have a github repository that has premade attacks (https://github.com/hak5darren/USB-Rubber-Ducky). \\
@@ -44,7 +44,7 @@ This attack is from the payload wiki that is created for the hakshop device. It 
 \\
 
 subsection{HID creation/SET}
-The social engineering toolkit can use Arduino like devices to create a device that is similar to the hakshope rubber ducky. 
+The social engineering toolkit can use Arduino like devices to create a device that is similar to the hakshope rubber ducky.
 \begin{verbatim}
 
 This attack vector also attacks X10 based controllers, be sure to be leveraging
@@ -71,10 +71,10 @@ This attack vector also attacks X10 based controllers, be sure to be leveraging
 
 \end{verbatim}
 
-These are the attcks that the Social Engineering Toolkit have prebuilt for deployment on a teensy or arduino like microcontroller. The attacks for this are more sofisticated if the attacker wants to modify it because they are written in c or c++. Attack 13 wouldn't be a type of attack where the device was used by an unsuspecting user. It creates a tool that uses dip switches to change what attack is being run and could be used by a malicious person changing the dip switches while trying to exploit an empty workstation. 
+These are the attcks that the Social Engineering Toolkit have prebuilt for deployment on a teensy or arduino like microcontroller. The attacks for this are more sofisticated if the attacker wants to modify it because they are written in c or c++. Attack 13 wouldn't be a type of attack where the device was used by an unsuspecting user. It creates a tool that uses dip switches to change what attack is being run and could be used by a malicious person changing the dip switches while trying to exploit an empty workstation.
 
 subsection{BadUSB Devices}
-"BadUSB" is research on different USB devices that can be converted to execute these style of attacks named. These attacks require the creator to reprogram the firmware of a device. This attack is not limited to USB thumbdrive type devices.There is a list of devices that have been researched at https://opensource.srlabs.de/projects/badusb.  
+"BadUSB" is research on different USB devices that can be converted to execute these style of attacks named. These attacks require the creator to reprogram the firmware of a device. This attack is not limited to USB thumbdrive type devices.There is a list of devices that have been researched at https://opensource.srlabs.de/projects/badusb.
 
 \subsection{Impact}
 This attack requires that the attacker have more knowledge on the physical operations of a target. On a successful attack this increases the payoff. An example of this being sucessful is the Stuxnet attack on Iran. The attack was able to cross into an air gaped, not accessable from the internet, system and destroy centerfuges because the payload was designed to target the industrial control systems that the centerfuges used. This is an extreme example but these styles of attacks have been used by nation's to protect their self interest.\\
@@ -82,4 +82,4 @@ This attack requires that the attacker have more knowledge on the physical opera
 
 \subsection{Prevention}
 Preventing the lower level versions of these attacks are simple. Don't let regular users have local admin. Blacklist USB devices and don't allow automatic installation.\\
-For the higher value targets that require zero-day exploits there isn't much of a defence because they are by definiton an unknown attack. The mitigation on these is to design a system where there isn't a single point that cause cause systemic damage.  
+For the higher value targets that require zero-day exploits there isn't much of a defence because they are by definiton an unknown attack. The mitigation on these is to design a system where there isn't a single point that cause cause systemic damage.

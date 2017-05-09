@@ -1,4 +1,4 @@
-\section{Zach's attack}
+\section{Zach's Attack: Cross-Site Scripting}
 \paragraph{Bug-Bounty Programs}
 Bug-bounty programs are utilized by companies to find vulnerabilities in their web-services.  With an ever growing need to put information out on the web; whether it be blogs, news articles, social media, cloud storage, remote work, etc you can see why a company would want their services secure. There is also research that for web-based services, it can be more beneficial to be a part of a bug-bounty program than it is to hire multiple full time security analysts.  With the theory “More sets of eyes are better than one” bug-bounty programs have taken off in recent times.  Thousands of dollars are awarded monthly, and for some researchers who really know their stuff - it can be their full time job.
 
@@ -19,9 +19,9 @@ This is also referred to as Reflected XSS or when the malicious string is input 
 
 \paragraph{Tools}
 
-\subparagraph{Burp-Suite -} 
-Utilized by penetration testers, as at the very minimum it can be used to intercept all data being transferred to the browser as a web page is loaded.  This includes javascript files, DOM elements, cookies, referral headers.  The tool is useful for finding un-sanitized/validated/encoded elements being passed around.  
-Personally, I think the most useful part of this tool is to show the referral headers that are being passed to the browser as the web page is being loaded.. They are often forgotten about as a potential attack vector. 
+\subparagraph{Burp-Suite -}
+Utilized by penetration testers, as at the very minimum it can be used to intercept all data being transferred to the browser as a web page is loaded.  This includes javascript files, DOM elements, cookies, referral headers.  The tool is useful for finding un-sanitized/validated/encoded elements being passed around.
+Personally, I think the most useful part of this tool is to show the referral headers that are being passed to the browser as the web page is being loaded.. They are often forgotten about as a potential attack vector.
 
 \subparagraph{XSScrapy}
 An open source XSS scanner by Dan McInerney.  It is a python scripted tool that “scrapes” a website, this tool creates spiders that recursively check every URL held in that domain to find possible injection points.  There are a number of different injection points where the injected string “1zqjam'"(){}<x>:/1zqjam;9” is placed into them. This injection string contains the most “dangerous” character that can be used to subvert basic levels of escaping.
@@ -63,13 +63,13 @@ Interesting tool that checks sub-domains of a given domain. Uses web searching s
 Sublist3r also port scans each sub-domain, showing you what ports are open what aren’t.  This is important recon work that goes into penetration testing, as sub-domains are potential backdoors into a companies infrstructure as well.
 
 \subparagraph{Recent Interesting Bounties and Escalation }
-To get a good payout - or in some cases even be able to submit a bug on one of these bug-bounty platforms, a simple Reflected XSS attack won’t work.  It’s important for the security researcher to escalate the bug as far as he can.  There are a number of ways to do this, so it really takes ingenuity and a lot of manual testing to stitch together different bugs to make one big, impactful one.  This is where the big payouts are, and the following is a short list of the most interesting one’s I have read.  
+To get a good payout - or in some cases even be able to submit a bug on one of these bug-bounty platforms, a simple Reflected XSS attack won’t work.  It’s important for the security researcher to escalate the bug as far as he can.  There are a number of ways to do this, so it really takes ingenuity and a lot of manual testing to stitch together different bugs to make one big, impactful one.  This is where the big payouts are, and the following is a short list of the most interesting one’s I have read.
 
 \subparagraph{Self XSS to Good-XSS AirBNB}
 
 - http://www.geekboy.ninja/blog/airbnb-bug-bounty-turning-self-xss-into-good-xss-2/
 
-\subparagraph{Stored XSS on developer.uber.com via admin account compromise} 
+\subparagraph{Stored XSS on developer.uber.com via admin account compromise}
 
 - https://hackerone.com/reports/152067
 
@@ -78,4 +78,3 @@ To get a good payout - or in some cases even be able to submit a bug on one of t
 - https://whitton.io/articles/uber-turning-self-xss-into-good-xss/
 
 This is just a small list of impactful bugs that paid out at least five thousand dollars to security researchers that found them.  There are a number of "hall of fame" lists out there for every vulnerability you can think of, these were interesting to me because they were in-depth and gave a good overview on how a security researcher goes about escilating a common, not such a big deal xss vulnerability into something much more.  The list I used is: https://github.com/ngalongc/bug-bounty-reference\#cross-site-scripting-xss.
-
